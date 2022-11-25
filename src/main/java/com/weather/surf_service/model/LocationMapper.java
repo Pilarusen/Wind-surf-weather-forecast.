@@ -1,17 +1,15 @@
 package com.weather.surf_service.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
 @Builder
 public class LocationMapper {
-    private String city_name;
+    private String cityName;
     private String date;
     private float temperature;
-    private float wind_speed;
+    private float windSpeed;
 }
