@@ -10,12 +10,13 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 public class Forecast {
-    private String city_name;
+    //TODO poprawić city_name itd dodać Jsoon property
+    private String cityName;
     private List<LocationDTO> locationDTOList;
 
     @JsonCreator
-    public Forecast(@JsonProperty("city_name") String city_name, @JsonProperty("data") List<LocationDTO> weatherList) {
-        this.city_name = city_name;
+    public Forecast(@JsonProperty("city_name") String cityName, @JsonProperty("data") List<LocationDTO> weatherList) {
+        this.cityName = cityName;
         this.locationDTOList = weatherList;
     }
 }

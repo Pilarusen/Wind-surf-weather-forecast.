@@ -18,6 +18,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class WeatherBitService {
+    private final static String DATE_PATTERN = "yyyy-MM-dd";
 
     private final WeatherClient weatherClient;
 
@@ -27,6 +28,7 @@ public class WeatherBitService {
     public List<LocationDTO> getWeatherForLocations(String date) {
         log.info("Get Locations for date: {}.", date);
         long dateRange = calculateDateRangeFromToday(date); //if date is from past -> throw exception
+        //TODO tutaj już nie sprawdzam czy data jest ok bo mi wiersz powyżej w razie czego rzuca wyjątek
         var forecastList = Location.locations.entrySet()
                 .stream()
                 .map(
@@ -40,13 +42,26 @@ public class WeatherBitService {
         return getLocationsForDate(forecastList, date);
     }
 
+    //Map list of Forecasts to list of LocationDTO.
+    private List<LocationDTO> getLocationsForDate(List<Forecast> forecastList, String date) {
+        return forecastList
+                .stream()
+                .map(forecast -> removeUnnecessaryData(forecast, date))
+                .toList();
+//TODO czy sprawdzać poprawnośc daty?
+        //co jeśli metoda jest pruwatna i chcę ją przetestowac w testach? -> test2
+    }
+
     private long calculateDateRangeFromToday(String dateString) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate date = null;
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
+        LocalDate date;
         try {
             date = LocalDate.parse(dateString, dateTimeFormatter);
         } catch (DateTimeParseException exception) {
-            log.error("Date: {} is not formatted properly.", dateString);
+            String message = String.format("Date: %s is not formatted properly.", dateString);
+            log.error(message);
+            throw new IllegalArgumentException(message);
+            //TODO dodać loggery przy rzucaniu wyjątków -> cała apka
         }
         long dateRange = ChronoUnit.DAYS.between(LocalDate.now(), date);
         log.info("Date range from now: {}", dateRange);
@@ -59,24 +74,14 @@ public class WeatherBitService {
         return dateRange;
     }
 
-    //Map list of Forecasts to list of LocationDTO.
-    private List<LocationDTO> getLocationsForDate(List<Forecast> forecastList, String date) {
-        return forecastList
-                .stream()
-                .map(forecast -> removeUnnecessaryData(forecast, date))
-                .toList();
-
-    }
-
-    //TODO test orElseThrow
     //Filter Locations by date.
     private LocationDTO removeUnnecessaryData(Forecast forecast, String date) {
         var locationDTO = forecast.getLocationDTOList()
                 .stream()
-                .filter(location -> location.getValid_date().equals(date))
-                .findFirst().orElseThrow();
+                .filter(location -> location.getValidDate().equals(date))
+                .findFirst().orElseThrow(RuntimeException::new);//TODO get czy orElseThrow???
 
-        locationDTO.setCity_name(forecast.getCity_name());
+        locationDTO.setCityName(forecast.getCityName());
         return locationDTO;
     }
 }

@@ -23,34 +23,39 @@ public class WeatherService {
 
     //This service will count the best location, WeatherBitService is to provide list of LocationDTO objects to count best weather here.
     public LocationMapper getBestWeather(String date) {
-        //date YYYY-MM-DD
+        //date yyyy-MM-dd
         checkDateFormat(date);
         return findBestWeather(getLocationListFromWeatherApi(date));
     }
 
     private LocationMapper findBestWeather(List<LocationDTO> locationListFromWeatherApi) {
         log.info("Calculating best weather.");
-        List<LocationMapper> locationsMeetingRequirements = locationListFromWeatherApi
+        List<LocationMapper> locationsMeetRequirements = locationListFromWeatherApi
                 .stream()
                 .map(locationDTO -> LocationMapper.builder()
-                        .city_name(locationDTO.getCity_name())
-                        .date(locationDTO.getValid_date())
+                        .cityName(locationDTO.getCityName())
+                        .date(locationDTO.getValidDate())
                         .temperature(Float.parseFloat(locationDTO.getTemp()))
-                        .wind_speed(Float.parseFloat(locationDTO.getWind_spd()))
+                        .windSpeed(Float.parseFloat(locationDTO.getWindSpeed()))
                         .build())
-                .filter(locationMapper -> locationMapper.getWind_speed() > 5 && locationMapper.getWind_speed() < 18)
-                .filter(locationMapper -> locationMapper.getTemperature() > 5 && locationMapper.getTemperature() < 35).toList();
-        if (locationsMeetingRequirements.isEmpty()) {
+                .filter(locationMapper -> locationMapper.getWindSpeed() > 5 && locationMapper.getWindSpeed() < 18)
+                .filter(locationMapper -> locationMapper.getTemperature() > 5 && locationMapper.getTemperature() < 35)
+                .toList();
+        if (locationsMeetRequirements.isEmpty()) {
             String message = "Non of the locations meets the requirements.";
             log.info(message);
             throw new NoSuchElementException(message);
-        } else if (locationsMeetingRequirements.size() == 1) {
-            LocationMapper locationResult = locationsMeetingRequirements.stream().findFirst().orElseThrow();
-            //orElse czy get?
-            log.info("Locations meet requirements count == 1, location city name: {}", locationResult.getCity_name());
+            //TODO rzucać wyjątek? czy może jakiś 404?
+        } else if (locationsMeetRequirements.size() == 1) {
+            LocationMapper locationResult = locationsMeetRequirements
+                    .stream()
+                    .findFirst()
+                    .orElseThrow();
+            //TODO orElse czy get?
+            log.info("Locations meet requirements count == 1, location city name: {}", locationResult.getCityName());
             return locationResult;
         } else {
-                return calculateBestLocation(locationsMeetingRequirements);
+                return calculateBestLocation(locationsMeetRequirements);
         }
     }
 
@@ -59,16 +64,19 @@ public class WeatherService {
         Map<Float, LocationMapper> map = new LinkedHashMap<>();
         //How to find best weather: wind * 3 + temp.
         locationsList.forEach(location -> map.put(
-                (location.getWind_speed() * 3 + location.getTemperature()),
-                location));
+                (location.getWindSpeed() * 3 + location.getTemperature()),
+                location
+                ));
 
         LocationMapper locationResult = map.entrySet()
                 .stream()
                 .max(Map.Entry.comparingByKey())
-                .stream().findFirst()
-                .map(Map.Entry::getValue).orElseThrow();
-        //or else czy get?
-        log.info("After calculation best location city name: {}", locationResult.getCity_name());
+                .stream()
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow();
+        //TODO or else czy get?
+        log.info("After calculation best location city name: {}.", locationResult.getCityName());
         return locationResult;
     }
 
@@ -81,6 +89,7 @@ public class WeatherService {
             String message = String.format("Incorrect date format: %s", date);
             log.error(message);
             throw new IllegalArgumentException(message);
+            //TODO wyjąteg czy status? czy coś?
         }
     }
 

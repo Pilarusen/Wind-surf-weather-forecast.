@@ -6,12 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class LocationMapper {
-    private String city_name;
+    private String cityName;
     private String date;
     private float temperature;
-    private float wind_speed;
+    private float windSpeed;
 }
