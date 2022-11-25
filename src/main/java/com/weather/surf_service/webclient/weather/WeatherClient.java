@@ -17,15 +17,16 @@ public class WeatherClient {
     public static final String API_KEY = "5872bfc95fb64253a0ad76e768aafe34";
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Forecast getWeatherForCityCoOrdinates(String locationName, Map<String, String> coOrdinates) {
+    public Forecast getWeatherForCityCoOrdinates(String locationName, Map<String, String> coOrdinates, long daysRange) {
         String lat = String.join("", coOrdinates.keySet());
         String lon = String.join("", coOrdinates.values());
         log.info("Get weather for: {}, lat={}, lon={}.", locationName, lat, lon);
         return restTemplate.getForObject(
-                WEATHER_URL + "/daily?lat={lat}&lon={lon}&key={API_KEY}",
+                WEATHER_URL + "/daily?lat={lat}&lon={lon}&days={daysRange}&key={API_KEY}",
                 Forecast.class,
                 lat,
                 lon,
+                daysRange,
                 API_KEY
         );
     }
