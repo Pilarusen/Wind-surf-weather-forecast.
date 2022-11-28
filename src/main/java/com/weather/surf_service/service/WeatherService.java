@@ -1,5 +1,7 @@
 package com.weather.surf_service.service;
 
+import com.weather.surf_service.exception.NoneLocationMeetRequirementsException;
+import com.weather.surf_service.exception.WrongDateFormatException;
 import com.weather.surf_service.model.LocationDTO;
 import com.weather.surf_service.model.LocationMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -28,6 +29,10 @@ public class WeatherService {
         return findBestWeather(getLocationListFromWeatherApi(date));
     }
 
+    private List<LocationDTO> getLocationListFromWeatherApi(String date) {
+        return weatherBitService.getWeatherForLocations(date);
+    }
+
     private LocationMapper findBestWeather(List<LocationDTO> locationListFromWeatherApi) {
         log.info("Calculating best weather.");
         List<LocationMapper> locationsMeetRequirements = locationListFromWeatherApi
@@ -44,12 +49,13 @@ public class WeatherService {
         if (locationsMeetRequirements.isEmpty()) {
             String message = "Non of the locations meets the requirements.";
             log.info(message);
-            throw new NoSuchElementException(message);
+            throw new NoneLocationMeetRequirementsException(message);
         } else if (locationsMeetRequirements.size() == 1) {
             LocationMapper locationResult = locationsMeetRequirements
                     .stream()
                     .findFirst()
                     .get();
+            //TODO exception? or get?
             log.info("Locations meet requirements count == 1, location city name: {}", locationResult.getCityName());
             return locationResult;
         } else {
@@ -63,7 +69,7 @@ public class WeatherService {
         //How to find best weather: wind * 3 + temp.
         locationsList.forEach(location ->
                 map.put(
-                    (location.getWindSpeed() * 3 + location.getTemperature()), location
+                        (location.getWindSpeed() * 3 + location.getTemperature()), location
                 ));
 
         LocationMapper locationResult = map.entrySet()
@@ -72,20 +78,17 @@ public class WeatherService {
                 .stream()
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .orElseThrow(RuntimeException::new);
+                .get();
+        //TODO here i know that list has min 2 elements so 1 must be present, no exception needed
         log.info("After calculation best location city name: {}.", locationResult.getCityName());
         return locationResult;
-    }
-
-    private List<LocationDTO> getLocationListFromWeatherApi(String date) {
-        return weatherBitService.getWeatherForLocations(date);
     }
 
     private void checkDateFormat(String date) {
         if (!isDateFormatCorrect(date)) {
             String message = String.format("Incorrect date format: %s", date);
             log.error(message);
-            throw new IllegalArgumentException(message);
+            throw new WrongDateFormatException(message);
         }
     }
 
