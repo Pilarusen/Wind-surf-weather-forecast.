@@ -59,5 +59,27 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, badRequest);
     }
 
+    @ExceptionHandler(value = WrongLocationCoordinate.class)
+    public ResponseEntity<Object> handleWrongLocationsCoordinates(WrongLocationCoordinate exception) {
+        HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;
 
+        ApiException apiException = new ApiException(
+                exception.getMessage(),
+                badRequest,
+                ZonedDateTime.now(ZoneId.of("Z"))
+        );
+        return new ResponseEntity<>(apiException, badRequest);
+    }
+
+    @ExceptionHandler(value = WeatherApiUnavailable.class)
+    public ResponseEntity<Object> handleWhenApiIsNotWorking(WeatherApiUnavailable exception) {
+        HttpStatus badRequest = HttpStatus.BAD_GATEWAY;
+
+        ApiException apiException = new ApiException(
+                exception.getMessage(),
+                badRequest,
+                ZonedDateTime.now(ZoneId.of("Z"))
+        );
+        return new ResponseEntity<>(apiException, badRequest);
+    }
 }
