@@ -15,6 +15,13 @@ import java.util.Map;
 @Slf4j
 @Service
 public class WeatherService {
+    //TODO move date pattern to yml
+    private final static String DATE_PATTERN = "yyyy-MM-dd";
+    //TODO move below to yml
+    int minWindSpeedRequirement = 5;
+    int maxWindSpeedRequirement = 18;
+    int minTempSpeedRequirement = 5;
+    int maxTempSpeedRequirement = 35;
 
     private final WeatherBitService weatherBitService;
 
@@ -33,7 +40,7 @@ public class WeatherService {
         return weatherBitService.getWeatherForLocations(date);
     }
 
-    private LocationMapper findBestWeather(List<LocationDTO> locationListFromWeatherApi) {
+    LocationMapper findBestWeather(List<LocationDTO> locationListFromWeatherApi) {
         log.info("Calculating best weather.");
         List<LocationMapper> locationsMeetRequirements = locationListFromWeatherApi
                 .stream()
@@ -43,8 +50,8 @@ public class WeatherService {
                         .temperature(Float.parseFloat(locationDTO.getTemp()))
                         .windSpeed(Float.parseFloat(locationDTO.getWindSpeed()))
                         .build())
-                .filter(locationMapper -> locationMapper.getWindSpeed() > 5 && locationMapper.getWindSpeed() < 18)
-                .filter(locationMapper -> locationMapper.getTemperature() > 5 && locationMapper.getTemperature() < 35)
+                .filter(locationMapper -> locationMapper.getWindSpeed() > minWindSpeedRequirement && locationMapper.getWindSpeed() < maxWindSpeedRequirement)
+                .filter(locationMapper -> locationMapper.getTemperature() > minTempSpeedRequirement && locationMapper.getTemperature() < maxTempSpeedRequirement)
                 .toList();
         if (locationsMeetRequirements.isEmpty()) {
             String message = "Non of the locations meets the requirements.";
@@ -64,7 +71,7 @@ public class WeatherService {
         }
     }
 
-    private LocationMapper calculateBestLocation(List<LocationMapper> locationsList) {
+    LocationMapper calculateBestLocation(List<LocationMapper> locationsList) {
         Map<Float, LocationMapper> map = new LinkedHashMap<>();
         //How to find best weather: wind * 3 + temp.
         locationsList.forEach(location ->
@@ -93,6 +100,6 @@ public class WeatherService {
     }
 
     private boolean isDateFormatCorrect(String date) {
-        return GenericValidator.isDate(date, "yyyy-MM-dd", true);
+        return GenericValidator.isDate(date, DATE_PATTERN, true);
     }
 }
