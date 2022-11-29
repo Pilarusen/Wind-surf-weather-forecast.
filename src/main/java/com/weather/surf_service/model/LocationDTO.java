@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString

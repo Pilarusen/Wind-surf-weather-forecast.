@@ -11,7 +11,7 @@ import java.util.Map;
 @Component
 public class WeatherClient {
 
-    //TODO wstrzykiwanie WEATHER_URL, API_KEY przez konfigurator, jak? preperties?
+    //TODO create application.yml to insert url and the rest elements.
 
     public static final String WEATHER_URL = "https://api.weatherbit.io/v2.0/forecast/";
     public static final String API_KEY = "5872bfc95fb64253a0ad76e768aafe34";
