@@ -1,6 +1,6 @@
 package com.weather.surf_service.service;
 
-import com.weather.surf_service.exception.NoneLocationMeetRequirementsException;
+import com.weather.surf_service.exception.NoneLocationMeetsRequirementsException;
 import com.weather.surf_service.exception.WrongDateFormatException;
 import com.weather.surf_service.model.LocationDTO;
 import com.weather.surf_service.model.LocationMapper;
@@ -52,7 +52,7 @@ public class WeatherServiceTest {
     }
 
     @Test
-    public void shouldReturnOneLocationWhenTwoMeetsRequirements() {
+    public void shouldReturnOneLocationWhenTwoMeetRequirements() {
         //given
         String locationDate = String.valueOf(LocalDate.now().plusDays(2));
         String bestLocationName = "bestLocation";
@@ -67,7 +67,7 @@ public class WeatherServiceTest {
     }
 
     @Test
-    public void nonOfLocationsMeetsRequirementsShouldThrowException() {
+    public void noneOfLocationsMeetRequirementsShouldThrowException() {
         //given
         String locationDate = String.valueOf(LocalDate.now().plusDays(2));
         List<LocationDTO> locationList = List.of(
@@ -75,7 +75,7 @@ public class WeatherServiceTest {
                 new LocationDTO("locationName2", locationDate, "1", "1"),
                 new LocationDTO("locationName3", locationDate, "1", "1"));
         //when
-        Exception exception = assertThrows(NoneLocationMeetRequirementsException.class,
+        Exception exception = assertThrows(NoneLocationMeetsRequirementsException.class,
                 () -> weatherService.findBestWeather(locationList));
         String expectedMessage = "Non of the locations meets the requirements.";
         //then

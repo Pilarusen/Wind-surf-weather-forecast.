@@ -1,8 +1,10 @@
 package com.weather.surf_service.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
