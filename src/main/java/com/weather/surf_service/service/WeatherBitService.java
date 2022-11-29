@@ -1,17 +1,15 @@
 package com.weather.surf_service.service;
 
 import com.weather.surf_service.exception.DateFromPastException;
-import com.weather.surf_service.exception.DateToFarAwayException;
+import com.weather.surf_service.exception.DateTooFarAwayException;
 import com.weather.surf_service.exception.WrongDateFormatException;
 import com.weather.surf_service.model.Forecast;
 import com.weather.surf_service.model.Location;
 import com.weather.surf_service.model.LocationDTO;
 import com.weather.surf_service.webclient.weather.WeatherClient;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,12 +17,12 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import static com.weather.surf_service.util.Utils.DATE_PATTERN;
+
 @Service
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class WeatherBitService {
-    //TODO move date pattern to yml
-    private final static String DATE_PATTERN = "yyyy-MM-dd";
 
     private final WeatherClient weatherClient;
 
@@ -32,28 +30,18 @@ public class WeatherBitService {
     //Get Json by WeatherClient, create list of LocationDTO.
     public List<LocationDTO> getWeatherForLocations(String date) {
         log.info("Get Locations for date: {}.", date);
-        long dateRange = calculateDateRangeFromToday(date); //if date is from past or more than 15 days from now -> throw exception
+        int dateRange = calculateDateRangeFromToday(date); //if date is from past or more than 15 days from now -> throw exception
         List<Forecast> forecastList;
-        try {
-            forecastList = Location.locations.entrySet()
-                    .stream()
-                    .map(
-                            element -> weatherClient.
-                                    getWeatherForCityCoOrdinates(
-                                            element.getKey(),
-                                            element.getValue(),
-                                            (dateRange + 2)
-                                    ))
-                    .toList();
-        } catch (HttpClientErrorException exception) {
-            log.error(exception.getMessage());
-            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
-            //TODO test when api not working, maybe change exception
-        }
+        forecastList = Location.locations.entrySet().stream()
+                .map(element -> weatherClient.
+                        getWeatherForCityCoordinates(
+                                element.getKey(), //lat
+                                element.getValue(), //lon
+                                (dateRange + 2)))
+                .toList();
         return getLocationsForDate(forecastList, date);
     }
 
-    //Map list of Forecasts to list of LocationDTO.
     private List<LocationDTO> getLocationsForDate(List<Forecast> forecastList, String date) {
         return forecastList
                 .stream()
@@ -61,7 +49,7 @@ public class WeatherBitService {
                 .toList();
     }
 
-    long calculateDateRangeFromToday(String dateString) {
+    int calculateDateRangeFromToday(String dateString) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
         LocalDate date;
         try {
@@ -71,7 +59,7 @@ public class WeatherBitService {
             log.error(message);
             throw new WrongDateFormatException(message);
         }
-        long dateRange = ChronoUnit.DAYS.between(LocalDate.now(), date);
+        int dateRange = (int) ChronoUnit.DAYS.between(LocalDate.now(), date);
         log.info("Date range from now: {}", dateRange);
         if (dateRange < 0) {
             String message = "Provided date is from past. Should be at least today";
@@ -81,19 +69,17 @@ public class WeatherBitService {
         if (dateRange > 15) {
             String message = "Provided date is out of range.";
             log.error(message);
-            throw new DateToFarAwayException(message);
+            throw new DateTooFarAwayException(message);
         }
         return dateRange;
     }
 
     //Filter Locations by date.
     LocationDTO removeUnnecessaryData(Forecast forecast, String date) {
-        var locationDTO = forecast.getLocationDTOList()
+        LocationDTO locationDTO = forecast.getLocationDTOList()
                 .stream()
                 .filter(location -> location.getValidDate().equals(date))
                 .findFirst().get();
-        //TODO find way how to end stream, here only changes on model could provide exceptions
-
         locationDTO.setCityName(forecast.getCityName());
         return locationDTO;
     }

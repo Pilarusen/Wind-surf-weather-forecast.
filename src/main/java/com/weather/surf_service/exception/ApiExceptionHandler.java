@@ -13,73 +13,61 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(value = WrongDateFormatException.class)
     public ResponseEntity<Object> handleWrongDateFormatException(WrongDateFormatException exception) {
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        HttpStatus status = HttpStatus.BAD_REQUEST;
 
         ApiException apiException = new ApiException(
                 exception.getMessage(),
-                badRequest,
+                status,
                 ZonedDateTime.now(ZoneId.of("Z"))
         );
-        return new ResponseEntity<>(apiException, badRequest);
+        return new ResponseEntity<>(apiException, status);
     }
 
     @ExceptionHandler(value = DateFromPastException.class)
     public ResponseEntity<Object> handleDateFromPastException(DateFromPastException exception) {
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        HttpStatus status = HttpStatus.BAD_REQUEST;
 
         ApiException apiException = new ApiException(
                 exception.getMessage(),
-                badRequest,
+                status,
                 ZonedDateTime.now(ZoneId.of("Z"))
         );
-        return new ResponseEntity<>(apiException, badRequest);
+        return new ResponseEntity<>(apiException, status);
     }
 
-    @ExceptionHandler(value = DateToFarAwayException.class)
-    public ResponseEntity<Object> handleDateToFarAwayException(DateToFarAwayException exception) {
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+    @ExceptionHandler(value = DateTooFarAwayException.class)
+    public ResponseEntity<Object> handleDateTooFarAwayException(DateTooFarAwayException exception) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
 
         ApiException apiException = new ApiException(
                 exception.getMessage(),
-                badRequest,
+                status,
                 ZonedDateTime.now(ZoneId.of("Z"))
         );
-        return new ResponseEntity<>(apiException, badRequest);
+        return new ResponseEntity<>(apiException, status);
     }
 
-    @ExceptionHandler(value = NoneLocationMeetRequirementsException.class)
-    public ResponseEntity<Object> handleNoneLocationMeetRequirements(NoneLocationMeetRequirementsException exception) {
-        HttpStatus badRequest = HttpStatus.NO_CONTENT;
+    @ExceptionHandler(value = NoneLocationMeetsRequirementsException.class)
+    public ResponseEntity<Object> handleNoneLocationMeetsRequirements(NoneLocationMeetsRequirementsException exception) {
+        HttpStatus status = HttpStatus.NO_CONTENT;
 
         ApiException apiException = new ApiException(
                 exception.getMessage(),
-                badRequest,
+                status,
                 ZonedDateTime.now(ZoneId.of("Z"))
         );
-        return new ResponseEntity<>(apiException, badRequest);
-    }
-
-    @ExceptionHandler(value = WrongLocationCoordinateException.class)
-    public ResponseEntity<Object> handleWrongLocationsCoordinates(WrongLocationCoordinateException exception) {
-        HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;
-
-        ApiException apiException = new ApiException(
-                exception.getMessage(),
-                badRequest,
-                ZonedDateTime.now(ZoneId.of("Z"))
-        );
-        return new ResponseEntity<>(apiException, badRequest);
+        return new ResponseEntity<>(apiException, status);
     }
 
     @ExceptionHandler(value = WeatherApiUnavailableException.class)
     public ResponseEntity<Object> handleWhenApiIsNotWorking(WeatherApiUnavailableException exception) {
-        HttpStatus badRequest = HttpStatus.BAD_GATEWAY;
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         ApiException apiException = new ApiException(
                 exception.getMessage(),
-                badRequest,
+                status,
                 ZonedDateTime.now(ZoneId.of("Z"))
         );
-        return new ResponseEntity<>(apiException, badRequest);
+        return new ResponseEntity<>(apiException, status);
     }
 }
