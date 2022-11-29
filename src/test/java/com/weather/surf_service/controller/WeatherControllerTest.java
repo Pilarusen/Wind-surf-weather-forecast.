@@ -13,9 +13,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @SpringBootTest
@@ -26,7 +29,6 @@ class WeatherControllerTest {
     private MockMvc mockMvc;
     @Mock
     WeatherClient weatherClient;
-
 
     @Test
     public void shouldReturnStatus2xx() throws Exception {
@@ -43,13 +45,5 @@ class WeatherControllerTest {
         mockMvc.perform(get(url))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
-        //Check if weatherClient is not sending request to API
-        verify(weatherClient, never()).getWeatherForCityCoOrdinates(any(), any(), anyLong());
-
-        //TODO tego chyba się nie testuje... EWENTUALNIE TESTY INTEGRACYJNE
-        //z tego co czytałem testy integracyjne nie powinny mieć mocków, jednak żeby uzyskac oczekiwany rezultat
-        //powinienem zrobić mock(WeatherCielnt) i zwrócoć zmokowane Forecast... bo co jeśli strona nie działa?
-        //moja apka wywali błąd a tak naprawdę to nie jej wina ale zewnętrznego API.
-        //TODO  TEST INTEGRACYJNY POWIENIENEM ROBIĆ MOKUJĄC WEATHER API CLIENT -> MOJE ZDANIE
     }
 }
