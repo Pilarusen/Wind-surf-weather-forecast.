@@ -23,16 +23,16 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class WeatherBitService {
+    //TODO move date pattern to yml
     private final static String DATE_PATTERN = "yyyy-MM-dd";
 
     private final WeatherClient weatherClient;
 
     //WeatherBitService is to provide list of LocationDTO objects.
-
     //Get Json by WeatherClient, create list of LocationDTO.
     public List<LocationDTO> getWeatherForLocations(String date) {
         log.info("Get Locations for date: {}.", date);
-        long dateRange = calculateDateRangeFromToday(date); //if date is from past -> throw exception
+        long dateRange = calculateDateRangeFromToday(date); //if date is from past or more than 15 days from now -> throw exception
         List<Forecast> forecastList;
         try {
             forecastList = Location.locations.entrySet()
@@ -48,7 +48,7 @@ public class WeatherBitService {
         } catch (HttpClientErrorException exception) {
             log.error(exception.getMessage());
             throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
-            //TODO exception to handle bad input in locations coordinates, check if correct
+            //TODO test when api not working, maybe change exception
         }
         return getLocationsForDate(forecastList, date);
     }
@@ -61,7 +61,7 @@ public class WeatherBitService {
                 .toList();
     }
 
-    private long calculateDateRangeFromToday(String dateString) {
+    long calculateDateRangeFromToday(String dateString) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN);
         LocalDate date;
         try {
@@ -87,7 +87,7 @@ public class WeatherBitService {
     }
 
     //Filter Locations by date.
-    private LocationDTO removeUnnecessaryData(Forecast forecast, String date) {
+    LocationDTO removeUnnecessaryData(Forecast forecast, String date) {
         var locationDTO = forecast.getLocationDTOList()
                 .stream()
                 .filter(location -> location.getValidDate().equals(date))
