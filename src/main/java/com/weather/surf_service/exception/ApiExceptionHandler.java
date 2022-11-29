@@ -59,8 +59,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, badRequest);
     }
 
-    @ExceptionHandler(value = WrongLocationCoordinate.class)
-    public ResponseEntity<Object> handleWrongLocationsCoordinates(WrongLocationCoordinate exception) {
+    @ExceptionHandler(value = WrongLocationCoordinateException.class)
+    public ResponseEntity<Object> handleWrongLocationsCoordinates(WrongLocationCoordinateException exception) {
         HttpStatus badRequest = HttpStatus.INTERNAL_SERVER_ERROR;
 
         ApiException apiException = new ApiException(
@@ -71,8 +71,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(apiException, badRequest);
     }
 
-    @ExceptionHandler(value = WeatherApiUnavailable.class)
-    public ResponseEntity<Object> handleWhenApiIsNotWorking(WeatherApiUnavailable exception) {
+    @ExceptionHandler(value = WeatherApiUnavailableException.class)
+    public ResponseEntity<Object> handleWhenApiIsNotWorking(WeatherApiUnavailableException exception) {
         HttpStatus badRequest = HttpStatus.BAD_GATEWAY;
 
         ApiException apiException = new ApiException(

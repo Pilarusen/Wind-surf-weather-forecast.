@@ -1,7 +1,7 @@
 package com.weather.surf_service.webclient.weather;
 
-import com.weather.surf_service.exception.WeatherApiUnavailable;
-import com.weather.surf_service.exception.WrongLocationCoordinate;
+import com.weather.surf_service.exception.WeatherApiUnavailableException;
+import com.weather.surf_service.exception.WrongLocationCoordinateException;
 import com.weather.surf_service.model.Forecast;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -34,10 +34,10 @@ public class WeatherClient {
                     daysRange,
                     API_KEY
             );
-        } catch (WeatherApiUnavailable exception) {
+        } catch (WeatherApiUnavailableException exception) {
             String message = "api.weatherbit.io is not working";
             log.error(message);
-            throw new WeatherApiUnavailable(message);
+            throw new WeatherApiUnavailableException(message);
         }
         return result;
     }
@@ -47,7 +47,7 @@ public class WeatherClient {
         if (!matches) {
             String message = String.format("Coordinates for your location is not correct: %s.", coordinates);
             log.error(message);
-            throw new WrongLocationCoordinate(message);
+            throw new WrongLocationCoordinateException(message);
         }
     }
 }
