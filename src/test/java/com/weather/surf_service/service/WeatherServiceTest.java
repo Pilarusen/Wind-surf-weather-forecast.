@@ -4,11 +4,9 @@ import com.weather.surf_service.exception.NoneLocationMeetsRequirementsException
 import com.weather.surf_service.exception.WrongDateFormatException;
 import com.weather.surf_service.model.LocationDTO;
 import com.weather.surf_service.model.LocationMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,25 +19,18 @@ public class WeatherServiceTest {
 
     @Mock
     private WeatherBitService weatherBitService;
-    private AutoCloseable autoCloseable;
     private WeatherService weatherService;
 
     @BeforeEach
     void setUp() {
-        autoCloseable = MockitoAnnotations.openMocks(this);
         weatherService = new WeatherService(weatherBitService);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        autoCloseable.close();
     }
 
     @Test
     public void shouldThrowWrongDateFormatException() {
         //given
         String wrongDateFormat1 = "2023-11-32";
-        String wrongDateFormat2 = "tttt";
+        String wrongDateFormat2 = "wrong date";
         //when
         Exception exception1 = assertThrows(WrongDateFormatException.class, () -> weatherService.getBestWeather(wrongDateFormat1));
         Exception exception2 = assertThrows(WrongDateFormatException.class, () -> weatherService.getBestWeather(wrongDateFormat2));
