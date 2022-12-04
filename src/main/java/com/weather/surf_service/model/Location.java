@@ -7,7 +7,7 @@ import java.util.Map;
 public class Location {
 
     public static HashMap<String, Map<String, String>> locations = new HashMap<>();
-
+//zamiast robic Hashmape Stringow zrob enuma z polami, ogolnie takie operacje na stringach robi sie zazwyczaj w enumach/stalych lub jestes w zlym projekcie ;)
     static {
         locations.put("JASTARNIA_POLAND", Collections.singletonMap("54.70", "18.67"));
         locations.put("BRIDGETOWN_BARBADOS", Collections.singletonMap("13.10", "-59.60"));

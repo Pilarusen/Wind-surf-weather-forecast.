@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+//@Data + mylaca nazwa (dodaj chociaz DTO) LocationMapper kojarzy sie z komponentem odpowiedzialnym za mapowanie pomiedzy typami Location i innymi (warto poczytac o mapstruct)
 public class LocationMapper {
     private String cityName;
     private String date;
