@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+//@Data zalatwia wiekszosc problemow ;)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

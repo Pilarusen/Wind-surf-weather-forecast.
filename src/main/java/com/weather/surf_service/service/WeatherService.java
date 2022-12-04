@@ -1,19 +1,18 @@
 package com.weather.surf_service.service;
 
+import static com.weather.surf_service.util.Utils.DATE_PATTERN;
+
 import com.weather.surf_service.exception.NoneLocationMeetsRequirementsException;
 import com.weather.surf_service.exception.WrongDateFormatException;
 import com.weather.surf_service.model.LocationDTO;
 import com.weather.surf_service.model.LocationMapper;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.GenericValidator;
 import org.springframework.stereotype.Service;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.weather.surf_service.util.Utils.DATE_PATTERN;
 
 @AllArgsConstructor
 @Slf4j
@@ -54,7 +53,7 @@ public class WeatherService {
                                 locationMapper.getWindSpeed() < maxWindSpeedRequirement)
                 .filter(locationMapper ->
                         locationMapper.getTemperature() > minTempSpeedRequirement &&
-                                locationMapper.getTemperature() < maxTempSpeedRequirement)
+                                locationMapper.getTemperature() < maxTempSpeedRequirement) //w LocationMapper dac metode ktora sprawdzi czy windSpeed i temperature sa w limicie
                 .toList();
     }
 
@@ -66,6 +65,7 @@ public class WeatherService {
         }
     }
 
+    //dla takich operacji warto zrobic katalog mapper i klase LocationMapper
     private LocationMapper buildLocationMapperFromDTO(LocationDTO locationDTO) {
         return LocationMapper.builder()
                 .cityName(locationDTO.getCityName())
@@ -87,7 +87,7 @@ public class WeatherService {
                 .stream()
                 .findFirst()
                 .map(Map.Entry::getValue)
-                .get();
+                .get(); //get() juz nie jego programiste skarcilo jak siedzieli w piatek po 15:00 bo produkcja padla :D lepiej dac orElseThrow lub orElse
         log.info("After calculation best location city name: {}.", locationResult.getCityName());
         return locationResult;
     }
@@ -100,6 +100,7 @@ public class WeatherService {
         }
     }
 
+    // jesli sie da to lepiej robic @Valid juz w kontolerze
     private boolean isDateFormatCorrect(String date) {
         return GenericValidator.isDate(date, DATE_PATTERN, true);
     }
