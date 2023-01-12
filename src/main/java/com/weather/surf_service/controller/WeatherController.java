@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
+
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -20,5 +22,9 @@ public class WeatherController {
     public LocationMapper getBestWeather(@PathVariable String date) {
         log.info("Received request getBestWeather with date {}", date);
         return weatherService.getBestWeather(date);
+    }
+
+    int iterate(Collection<Object> objects){
+        return (int) objects.stream().count();
     }
 }
